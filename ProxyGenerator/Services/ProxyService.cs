@@ -38,10 +38,13 @@ namespace ProxyGenerator.Services
             var cards = new List<CardRecord>();
             foreach (var line in Regex.Split(text, "\r\n|\r|\n"))
             {
-                var card = new CardRecord();
-                card.Number = int.Parse(line.Substring(0, line.IndexOf(' ')));
-                card.Name = line.Substring(line.IndexOf(' ') + 1);
-                cards.Add(card);
+                if (!string.IsNullOrWhiteSpace(line))
+                {
+                    var card = new CardRecord();
+                    card.Number = int.Parse(line.Substring(0, line.IndexOf(' ')));
+                    card.Name = line.Substring(line.IndexOf(' ') + 1);
+                    cards.Add(card);
+                }
             }
             return cards;
         }
@@ -51,7 +54,7 @@ namespace ProxyGenerator.Services
             var response = client.GetStringAsync($"https://api.scryfall.com/cards/named?exact={name}").Result;
             var card = JsonConvert.DeserializeObject<CardModel>(response);
             var res = new List<Image>();
-            if (!string.IsNullOrEmpty(card.image_uris.large))
+            if (!string.IsNullOrEmpty(card.image_uris?.large))
                 res.Add(DownloadImageFromUrl(card.image_uris.large));
             if (card.card_faces != null)
                 foreach (var face in card.card_faces)
