@@ -12,9 +12,9 @@ using System.Windows.Forms;
 
 namespace ProxyGenerator
 {
-    public partial class Form1 : Form
+    public partial class MTGProxyGenerator : Form
     {
-        public Form1()
+        public MTGProxyGenerator()
         {
             InitializeComponent();
             messageLabel.Text = "";
@@ -26,7 +26,7 @@ namespace ProxyGenerator
         {
             try
             {
-                var text = Clipboard.GetText();
+                var text = decklistTextBox.Text;
                 Cards = ProxyService.ParseImport(text);
                 SetMessage();
             }
@@ -69,12 +69,14 @@ namespace ProxyGenerator
             }
         }
 
-        private void goButton_Click(object sender, EventArgs e)
+        private async void goButton_Click(object sender, EventArgs e)
         {
             try
             {
                 messageLabel.Text = "Running";
-                ProxyService.RunAsync(Cards, SavePath);
+                loadingBox.Visible = true;
+                await ProxyService.RunAsync(Cards, SavePath);
+                loadingBox.Visible = false;
                 messageLabel.Text = "Finished";
                 messageLabel.ForeColor = Color.Green;
             }

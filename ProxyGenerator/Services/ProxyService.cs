@@ -16,12 +16,12 @@ namespace ProxyGenerator.Services
     public static class ProxyService
     {
         private static readonly HttpClient client = new HttpClient();
-        public static void RunAsync(IEnumerable<CardRecord> cards, string savePath)
+        public static async Task RunAsync(IEnumerable<CardRecord> cards, string savePath)
         {
             var imgList = new List<Image>();
             foreach (var card in cards)
             {
-                var imgs = GetCardAsync(card.Name);
+                var imgs = await GetCardAsync(card.Name);
                 for (int i = 0; i < card.Number; i++)
                 {
                     imgList.AddRange(imgs);
@@ -49,23 +49,22 @@ namespace ProxyGenerator.Services
             return cards;
         }
 
-        private static IList<Image> GetCardAsync(string name)
+        private static async Task<IList<Image>> GetCardAsync(string name)
         {
-            var response = client.GetStringAsync($"https://api.scryfall.com/cards/named?exact={name}").Result;
+            var response = await client.GetStringAsync($"https://api.scryfall.com/cards/named?exact={name}");
             var card = JsonConvert.DeserializeObject<CardModel>(response);
             var res = new List<Image>();
             if (!string.IsNullOrEmpty(card.image_uris?.large))
-                res.Add(DownloadImageFromUrl(card.image_uris.large));
+                res.Add(await DownloadImageFromUrl(card.image_uris.large));
             if (card.card_faces != null)
                 foreach (var face in card.card_faces)
                     if (!string.IsNullOrEmpty(face.image_uris?.large))
-                        res.Add(DownloadImageFromUrl(face.image_uris.large));
+                        res.Add(await DownloadImageFromUrl(face.image_uris.large));
             return res;
         }
 
         private static void CombineImages(IList<Image> images, int fileNumber, string path)
         {
-            //change the location to store the final image.
             string finalImage = $@"{path}/img{fileNumber}.jpeg";
             int localWidth = 0, localHeight = 0, width = 0, height = 0;
             for (int i = 0; i < images.Count(); i++)
@@ -106,30 +105,29 @@ namespace ProxyGenerator.Services
             img3.Dispose();
         }
 
-        public static Image DownloadImageFromUrl(string imageUrl)
+        public static async Task<Image> DownloadImageFromUrl(string imageUrl)
         {
-            Image image = null;
-
             try
             {
-                System.Net.HttpWebRequest webRequest = (System.Net.HttpWebRequest)System.Net.HttpWebRequest.Create(imageUrl);
+                Image image;
+
+                var webRequest = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(imageUrl);
                 webRequest.AllowWriteStreamBuffering = true;
                 webRequest.Timeout = 30000;
 
-                System.Net.WebResponse webResponse = webRequest.GetResponse();
+                using (var webResponse = await webRequest.GetResponseAsync())
+                {
+                    using (var stream = webResponse.GetResponseStream())
+                        image = Image.FromStream(stream);
+                    webResponse.Close();
+                }
 
-                Stream stream = webResponse.GetResponseStream();
-
-                image = Image.FromStream(stream);
-
-                webResponse.Close();
+                return image;
             }
             catch (Exception ex)
             {
-                return null;
+                return new Bitmap(672, 936);
             }
-
-            return image;
         }
     }
 }
