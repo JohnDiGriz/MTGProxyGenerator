@@ -29,7 +29,6 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MTGProxyGenerator));
-            this.importButton = new System.Windows.Forms.Button();
             this.goButton = new System.Windows.Forms.Button();
             this.destinationButton = new System.Windows.Forms.Button();
             this.messageLabel = new System.Windows.Forms.Label();
@@ -37,17 +36,6 @@
             this.loadingBox = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.loadingBox)).BeginInit();
             this.SuspendLayout();
-            // 
-            // importButton
-            // 
-            this.importButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.importButton.Location = new System.Drawing.Point(12, 413);
-            this.importButton.Name = "importButton";
-            this.importButton.Size = new System.Drawing.Size(160, 41);
-            this.importButton.TabIndex = 0;
-            this.importButton.Text = "Import";
-            this.importButton.UseVisualStyleBackColor = true;
-            this.importButton.Click += new System.EventHandler(this.importButton_Click);
             // 
             // goButton
             // 
@@ -118,7 +106,6 @@
             this.Controls.Add(this.messageLabel);
             this.Controls.Add(this.destinationButton);
             this.Controls.Add(this.goButton);
-            this.Controls.Add(this.importButton);
             this.MinimumSize = new System.Drawing.Size(534, 560);
             this.Name = "MTGProxyGenerator";
             this.Text = "MTGProxyGenerator";
@@ -129,8 +116,6 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.Button importButton;
         private System.Windows.Forms.Button goButton;
         private System.Windows.Forms.Button destinationButton;
         private System.Windows.Forms.Label messageLabel;

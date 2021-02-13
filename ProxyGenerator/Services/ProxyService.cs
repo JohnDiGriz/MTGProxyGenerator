@@ -21,7 +21,7 @@ namespace ProxyGenerator.Services
             var imgList = new List<Image>();
             foreach (var card in cards)
             {
-                var imgs = await GetCardAsync(card.Name);
+                var imgs = await GetCardAsync(card.Name, card.Set, card.CollectorsNumber);
                 for (int i = 0; i < card.Number; i++)
                 {
                     imgList.AddRange(imgs);
@@ -38,20 +38,30 @@ namespace ProxyGenerator.Services
             var cards = new List<CardRecord>();
             foreach (var line in Regex.Split(text, "\r\n|\r|\n"))
             {
-                if (!string.IsNullOrWhiteSpace(line))
+                var start = line.IndexOf(' ');
+                if (!string.IsNullOrWhiteSpace(line) && start >= 1 && int.TryParse(line.Substring(0, start), out int num))
                 {
                     var card = new CardRecord();
-                    card.Number = int.Parse(line.Substring(0, line.IndexOf(' ')));
-                    card.Name = line.Substring(line.IndexOf(' ') + 1);
+                    card.Number = num;
+                    int setPosition = line.IndexOf('(');
+                    if (setPosition > -1)
+                    {
+                        card.Name = line.Substring(start + 1, setPosition - start - 2);
+                        card.Set = line.Substring(setPosition + 1, 3);
+                        card.CollectorsNumber = int.Parse(line.Substring(line.LastIndexOf(' ') + 1));
+                    }
+                    else
+                        card.Name = line.Substring(start + 1);
                     cards.Add(card);
                 }
             }
             return cards;
         }
 
-        private static async Task<IList<Image>> GetCardAsync(string name)
+        private static async Task<IList<Image>> GetCardAsync(string name, string set = null, int collectorsNumber = 0)
         {
-            var response = await client.GetStringAsync($"https://api.scryfall.com/cards/named?exact={name}");
+            var response = await client.GetStringAsync("https://api.scryfall.com/cards/"+
+                                                                        $"{(set == null?$"named?exact={name}":$"{set.ToLower()}/{collectorsNumber}")}");
             var card = JsonConvert.DeserializeObject<CardModel>(response);
             var res = new List<Image>();
             if (!string.IsNullOrEmpty(card.image_uris?.large))

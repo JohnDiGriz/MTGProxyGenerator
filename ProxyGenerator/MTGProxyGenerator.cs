@@ -17,37 +17,25 @@ namespace ProxyGenerator
         public MTGProxyGenerator()
         {
             InitializeComponent();
-            messageLabel.Text = "";
+            SetMessage();
         }
 
         public List<CardRecord> Cards { get; set; }
         public string SavePath { get; set; }
         private void importButton_Click(object sender, EventArgs e)
         {
-            try
-            {
-                var text = decklistTextBox.Text;
-                Cards = ProxyService.ParseImport(text);
-                SetMessage();
-            }
-            catch(Exception ex)
-            {
-                messageLabel.Text = "Error while importing!";
-                messageLabel.ForeColor = Color.Red;
-                Cards = null;
-            }
         }
 
         private void SetMessage()
         {
             messageLabel.ForeColor = Color.Black;
-            if (Cards == null)
-            {
-                messageLabel.Text = "Awaiting import";
-            }
-            else if(string.IsNullOrEmpty(SavePath))
+            if(string.IsNullOrEmpty(SavePath))
             {
                 messageLabel.Text = "Awaiting save path";
+            }
+            else if (string.IsNullOrEmpty(decklistTextBox.Text))
+            {
+                messageLabel.Text = "Enter decklist and press go";
             }
             else
             {
@@ -73,6 +61,8 @@ namespace ProxyGenerator
         {
             try
             {
+                var text = decklistTextBox.Text;
+                Cards = ProxyService.ParseImport(text);
                 messageLabel.Text = "Running";
                 loadingBox.Visible = true;
                 await ProxyService.RunAsync(Cards, SavePath);
@@ -80,10 +70,13 @@ namespace ProxyGenerator
                 messageLabel.Text = "Finished";
                 messageLabel.ForeColor = Color.Green;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                messageLabel.Text = $"Error: {ex.Message}";
+                messageLabel.Text = $"Error";
                 messageLabel.ForeColor = Color.Red;
+                loadingBox.Visible = false;
+                MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Cards = null;
             }
         }
     }

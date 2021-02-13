@@ -8,5 +8,7 @@ namespace ProxyGenerator.Models
     {
         public string Name { get; set; }
         public int Number { get; set; }
+        public string Set { get; set; }
+        public int CollectorsNumber { get; set; }
     }
 }
