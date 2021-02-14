@@ -106,6 +106,7 @@
             this.Controls.Add(this.messageLabel);
             this.Controls.Add(this.destinationButton);
             this.Controls.Add(this.goButton);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MinimumSize = new System.Drawing.Size(534, 560);
             this.Name = "MTGProxyGenerator";
             this.Text = "MTGProxyGenerator";
