@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30611.23
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProxyGenerator", "ProxyGenerator\ProxyGenerator.csproj", "{CFF71BC6-6B40-4A1E-B1A3-E3AEDE7039BD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MTGProxyGenerator", "ProxyGenerator\MTGProxyGenerator.csproj", "{CFF71BC6-6B40-4A1E-B1A3-E3AEDE7039BD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
